@@ -1,40 +1,38 @@
 
-namespace CFR;
+namespace CFR.RockPaperScissors;
 
-public class Trainer
+public class Agent
 {
-    public enum Move { Rock, Paper, Scissors };
     public const int NumActions = 3;
     public double[] regretSum;
     public double[] strategy;
     public double[] strategySum;
 
-    public double[] opponentStrategy;
-
-    public Trainer()
+    public Agent()
     {
         regretSum = new double[NumActions];
         strategy = new double[NumActions];
         strategySum = new double[NumActions];
-
-        opponentStrategy = new double[] {0.4, 0.3, 0.3};
     }
 
-    private double[] GetStrategy()
+    public double[] GetStrategy()
     {
         double normalizingSum = 0;
         for (int a = 0; a < NumActions; a++)
         {
+            // If it's negative then set to 0
             strategy[a] = regretSum[a] > 0 ? regretSum[a] : 0;
+
+            // Sum all strategy values so we can normalise the sum to be 1
             normalizingSum += strategy[a];
         }
         for (int a = 0; a < NumActions; a++)
         {
-            if (normalizingSum > 0)
+            if (normalizingSum > 0) // normalise the strategy
             {
                 strategy[a] /= normalizingSum;
             }
-            else
+            else // if the sum is 0 then choose uniformly
             {
                 strategy[a] = 1.0 / NumActions;
             }
@@ -43,7 +41,7 @@ public class Trainer
         return strategy;
     }
 
-    private static Move GetAction(double[] strategy)
+    public static Game.Move GetAction(double[] strategy)
     {
         double r = new Random().NextDouble();
         double cumulativeProbability = 0;
@@ -53,33 +51,10 @@ public class Trainer
             cumulativeProbability += strategy[a];
             if (r < cumulativeProbability)
             {
-                return (Move) a;
+                return (Game.Move) a;
             }
         }
-        return (Move) a;
-    }
-
-    public void Train(int iterations)
-    {
-        double[] actionUtility = new double[NumActions];
-        for (int i = 0; i < iterations; i++)
-        {
-            // Get regret-matched mixed-strategy actions
-            double[] strategy = GetStrategy();
-            Move myAction = GetAction(strategy);
-            Move otherAction = GetAction(opponentStrategy);
-
-            // Compute action utilities
-            actionUtility[(int) otherAction] = 0;
-            actionUtility[(int) otherAction == NumActions - 1 ? 0 : (int) otherAction + 1] = 1;
-            actionUtility[(int) otherAction == 0 ? NumActions - 1 : (int) otherAction - 1] = -1;
-
-            // Accumulate action regrets
-            for (int a = 0; a < NumActions; a++)
-            {
-                regretSum[a] += actionUtility[a] - actionUtility[(int) myAction];
-            }
-        }
+        return (Game.Move) a;
     }
 
     public double[] GetAverageStrategy()
