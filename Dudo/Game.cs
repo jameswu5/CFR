@@ -12,6 +12,8 @@ public class Game
 
     public readonly Random random;
 
+    public Dictionary<int, Node> nodeMap;
+
     public Game(int sides = 6)
     {
         NumSides = sides;
@@ -36,10 +38,13 @@ public class Game
         }
 
         random = new();
+        nodeMap = new();
     }
 
-    public double CFR(bool[] isClaimed, double p1, double p2)
+    public double CFR(int[] rolls, bool[] isClaimed, double p0, double p1)
     {
+        // rolls: [player 1's roll, player 2's roll]
+
         int plays = 0;
         foreach (bool claim in isClaimed)
         {
@@ -49,29 +54,59 @@ public class Game
         int player = plays % 2;
         int opponent = 1 - player;
 
-
         // Check if history is terminal
         if (isClaimed[^1])
         {
-            // player 'player' is dudo
-
-            // simulate dice rolls
             int[] rollCounts = new int[NumSides];
-            rollCounts[random.Next(NumSides)]++;
-            rollCounts[random.Next(NumSides)]++;
+            foreach (int roll in rolls) rollCounts[roll]++;
 
             // Verify the claims
             int multiplier = player == 0 ? 1 : -1;
 
-            // If claim is true, we lose
+            // If claim is true, we lose since we are the one who made the doubt
             return VerifyClaim(isClaimed, rollCounts) ? -multiplier : multiplier;
         }
 
+        int infoID = InfoSetToInteger(rolls[player], isClaimed);
 
+        int actionsLeft = 0;
+        for (int a = isClaimed.Length; a >= 0; a--)
+        {
+            if (isClaimed[a]) break;
+            actionsLeft++;
+        }
 
+        // Get information set node or create it if nonexistent
+        if (!nodeMap.ContainsKey(infoID))
+        {
+            Node newNode = new(NumActions, infoID);
+            nodeMap[infoID] = newNode;
+        }
+        Node node = nodeMap[infoID];
 
+        // Recursively call cfr with additional history and probability
+        double[] strategy = node.GetStrategy(player == 0 ? p0 : p1);
+        double[] util = new double[actionsLeft];
+        double nodeUtil = 0;
+        for (int a = 0; a < actionsLeft; a++)
+        {
+            int choice = a + NumActions - actionsLeft;
+            isClaimed[choice] = true;
+            util[a] = player == 0
+                ? -CFR(rolls, isClaimed, p0 * strategy[a], p1)
+                : -CFR(rolls, isClaimed, p0, p1 * strategy[a]);
+            nodeUtil += strategy[a] * util[a];
+            isClaimed[choice] = false;
+        }
 
-        return 0.0;
+        // Compute and accumulate CFR
+        for (int a = 0; a < actionsLeft; a++)
+        {
+            double regret = util[a] - nodeUtil;
+            node.regretSum[a] += (player == 0 ? p1 : p0) * regret;
+        }
+
+        return nodeUtil;
     }
 
     private int InfoSetToInteger(int roll, bool[] isClaimed)
