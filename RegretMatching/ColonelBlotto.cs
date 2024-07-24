@@ -61,9 +61,14 @@ public class ColonelBlotto : Trainer
     public override void DisplayActions()
     {
         Console.WriteLine("Actions:");
-        foreach (int[] action in actions)
+        for (int i = 0; i < NumActions; i++)
         {
-            Utility.DisplayArray(action);
+            Console.Write($"{i}:\t( ");
+            foreach (int action in actions[i])
+            {
+                Console.Write($"{action} ");
+            }
+            Console.WriteLine(")");
         }
     }
 }
