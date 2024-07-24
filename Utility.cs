@@ -36,7 +36,6 @@ public static class Utility
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                
                 string s = typeof(T) == typeof(double) ? $"{matrix[i, j]:F3}" : matrix[i, j].ToString();
                 Console.Write($"{s}\t");
             }
