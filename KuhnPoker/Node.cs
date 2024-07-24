@@ -70,6 +70,7 @@ public class Node
 
     public override string ToString()
     {
-        return string.Format("{0,4}: [{1}]", infoSet, string.Join("  ", GetAverageStrategy().Select(x => x.ToString("F3"))));
+        Game.Card card = (Game.Card)int.Parse(infoSet[0].ToString());
+        return string.Format("{0} {1,3} | [{2}]", card, infoSet[1..], string.Join("  ", GetAverageStrategy().Select(x => x.ToString("F3"))));
     }
 }

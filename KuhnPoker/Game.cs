@@ -1,11 +1,10 @@
 
-using System.Reflection;
-
 namespace CFR.KuhnPoker;
 
 public class Game
 {
     public enum Move { Pass, Bet };
+    public enum Card { J, Q, K };
     public const int NumActions = 2;
     public readonly Random random;
     public Dictionary<string, Node> nodeMap;
@@ -85,7 +84,7 @@ public class Game
             Utility.Shuffle(cards);
             util += CFR(cards, "", 1, 1);
         }
-        Console.WriteLine($"Average game value: {util / iterations}");
+        Console.WriteLine($"Average game value: {util / iterations}\n");
         foreach (Node n in nodeMap.Values)
         {
             Console.WriteLine(n);
