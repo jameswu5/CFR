@@ -1,12 +1,12 @@
 
-namespace CFR.ColonelBlotto;
+namespace CFR.RegretMatching;
 
-public class TrainerCB : Trainer
+public class ColonelBlotto : Trainer
 {
     private readonly int battlefields;
     private readonly List<int[]> actions;
 
-    public TrainerCB(int battlefields, int soldiers) : base()
+    public ColonelBlotto(int battlefields, int soldiers) : base()
     {
         this.battlefields = battlefields;
 

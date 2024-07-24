@@ -1,11 +1,11 @@
 
-namespace CFR.RockPaperScissors;
+namespace CFR.RegretMatching;
 
-public class TrainerRPS : Trainer
+public class RockPaperScissors : Trainer
 {
     public enum Move { Rock, Paper, Scissors };
 
-    public TrainerRPS() : base()
+    public RockPaperScissors() : base()
     {
         NumActions = 3;
         UtilityTable = new int[,] { { 0, -1, 1 }, { 1, 0, -1 }, { -1, 1, 0 } };
@@ -16,6 +16,7 @@ public class TrainerRPS : Trainer
 
     public override void DisplayActions()
     {
+        Console.WriteLine("Actions:");
         for (int i = 0; i < NumActions; i++)
         {
             Console.WriteLine($"{i}: {(Move)i}");

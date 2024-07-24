@@ -1,5 +1,5 @@
 
-namespace CFR;
+namespace CFR.RegretMatching;
 
 public class Agent
 {
