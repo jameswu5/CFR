@@ -1,17 +1,19 @@
 
-namespace CFR.RockPaperScissors;
+namespace CFR;
 
 public class Agent
 {
-    public const int NumActions = 3;
+    public readonly int NumActions;
+
     public double[] regretSum;
     public double[] strategy;
     public double[] strategySum;
 
-    public Agent()
+    public Agent(int NumActions)
     {
-        regretSum = new double[NumActions];
-        strategy = new double[NumActions];
+        this.NumActions = NumActions;
+        regretSum   = new double[NumActions];
+        strategy    = new double[NumActions];
         strategySum = new double[NumActions];
     }
 
@@ -41,7 +43,7 @@ public class Agent
         return strategy;
     }
 
-    public static Game.Move GetAction(double[] strategy)
+    public int GetAction(double[] strategy)
     {
         double r = new Random().NextDouble();
         double cumulativeProbability = 0;
@@ -51,10 +53,10 @@ public class Agent
             cumulativeProbability += strategy[a];
             if (r < cumulativeProbability)
             {
-                return (Game.Move) a;
+                return a;
             }
         }
-        return (Game.Move) a;
+        return a;
     }
 
     public double[] GetAverageStrategy()
