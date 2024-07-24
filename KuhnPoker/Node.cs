@@ -5,18 +5,20 @@ public class Node
 {
     public const int NumActions = 2;
 
+    public string infoSet;
     public double[] regretSum;
     public double[] strategy;
     public double[] strategySum;
 
-    public Node()
+    public Node(string infoSet)
     {
-        regretSum   = new double[NumActions];
-        strategy    = new double[NumActions];
-        strategySum = new double[NumActions];
+        this.infoSet = infoSet;
+        regretSum    = new double[NumActions];
+        strategy     = new double[NumActions];
+        strategySum  = new double[NumActions];
     }
 
-    private double GetStrategy(double realisationWeight)
+    public double[] GetStrategy(double realisationWeight)
     {
         double normalizingSum = 0;
         for (int a = 0; a < NumActions; a++)
@@ -68,6 +70,6 @@ public class Node
 
     public override string ToString()
     {
-        throw new NotImplementedException();
+        return string.Format("{0,4}: [{1}]", infoSet, string.Join("  ", GetAverageStrategy().Select(x => x.ToString("F3"))));
     }
 }
