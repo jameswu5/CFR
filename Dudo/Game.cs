@@ -129,7 +129,7 @@ public class Game
         Console.WriteLine($"Average game value: {util / iterations}\n");
         foreach (Node n in nodeMap.Values)
         {
-            Console.WriteLine(n);
+            // Console.WriteLine(n);
         }
     }
 
@@ -158,6 +158,12 @@ public class Game
 
     private bool VerifyClaim(bool[] isClaimed, int[] rollCounts)
     {
+        // Rolling bottom number counts everywhere
+        for (int i = 1; i < rollCounts.Length; i++)
+        {
+            rollCounts[i] += rollCounts[0];
+        }
+
         for (int a = 0; a < NumActions - 1; a++)
         {
             if (!isClaimed[a]) continue;
