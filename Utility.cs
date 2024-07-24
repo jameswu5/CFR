@@ -24,7 +24,8 @@ public static class Utility
     {
         foreach (T item in array)
         {
-            Console.Write($"{item}\t");
+            string s = typeof(T) == typeof(double) ? $"{item:F3}" : item.ToString();
+            Console.Write($"{s}\t");
         }
         Console.WriteLine();
     }
@@ -35,7 +36,9 @@ public static class Utility
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                Console.Write($"{matrix[i, j]}\t");
+                
+                string s = typeof(T) == typeof(double) ? $"{matrix[i, j]:F3}" : matrix[i, j].ToString();
+                Console.Write($"{s}\t");
             }
             Console.WriteLine();
         }
