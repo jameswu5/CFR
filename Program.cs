@@ -5,7 +5,8 @@ public static class Program
 {
     public static void Main()
     {
-        TrainRockPaperScissors(2);
+        // TrainRockPaperScissors(2);
+        ColonelBlotto.Game game = new(3, 3);
     }
 
     public static void TrainRockPaperScissors(int players, double[]? strategy = null)
