@@ -1,4 +1,6 @@
 
+using System.Text;
+
 namespace CFR.Dudo;
 
 // This is basically the same as in Kuhn Poker so look to merge the two after this
@@ -6,14 +8,17 @@ public class Node
 {
     public int NumActions;
     public int infoID;
+    private string history;
+
     public double[] regretSum;
     public double[] strategy;
     public double[] strategySum;
 
-    public Node(int NumActions, int infoID)
+    public Node(int NumActions, int infoID, string history)
     {
         this.NumActions = NumActions;
         this.infoID = infoID;
+        this.history = history;
 
         regretSum   = new double[NumActions];
         strategy    = new double[NumActions];
@@ -72,6 +77,6 @@ public class Node
 
     public override string ToString()
     {
-        throw new NotImplementedException();
+        return $"{history} | {string.Join(", ", GetAverageStrategy())}";
     }
 }

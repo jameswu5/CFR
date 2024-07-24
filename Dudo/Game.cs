@@ -1,3 +1,4 @@
+using System.Text;
 
 namespace CFR.Dudo;
 
@@ -43,6 +44,8 @@ public class Game
 
     public double CFR(int[] rolls, bool[] isClaimed, double p0, double p1)
     {
+        // Console.WriteLine($"Rolls: {rolls[0]} {rolls[1]} | Reach prob: {p0} {p1}");
+
         // rolls: [player 1's roll, player 2's roll]
 
         int plays = 0;
@@ -70,7 +73,7 @@ public class Game
         int infoID = InfoSetToInteger(rolls[player], isClaimed);
 
         int actionsLeft = 0;
-        for (int a = isClaimed.Length; a >= 0; a--)
+        for (int a = isClaimed.Length - 1; a >= 0; a--)
         {
             if (isClaimed[a]) break;
             actionsLeft++;
@@ -79,7 +82,7 @@ public class Game
         // Get information set node or create it if nonexistent
         if (!nodeMap.ContainsKey(infoID))
         {
-            Node newNode = new(NumActions, infoID);
+            Node newNode = new(NumActions, infoID, ClaimHistoryToString(isClaimed));
             nodeMap[infoID] = newNode;
         }
         Node node = nodeMap[infoID];
@@ -109,6 +112,27 @@ public class Game
         return nodeUtil;
     }
 
+    public void Train(int iterations)
+    {
+        double util = 0;
+        for (int i = 0; i < iterations; i++)
+        {
+            int[] rolls = { random.Next(NumSides), random.Next(NumSides) };
+            util += CFR(rolls, new bool[NumActions], 1, 1);
+
+            if (i % 100 == 0)
+            {
+                Console.WriteLine($"Iteration {i}");
+            }
+
+        }
+        Console.WriteLine($"Average game value: {util / iterations}\n");
+        foreach (Node n in nodeMap.Values)
+        {
+            Console.WriteLine(n);
+        }
+    }
+
     private int InfoSetToInteger(int roll, bool[] isClaimed)
     {
         int res = roll;
@@ -118,6 +142,18 @@ public class Game
         }
 
         return res;
+    }
+
+    private string ClaimHistoryToString(bool[] isClaimed)
+    {
+        StringBuilder sb = new();
+        for (int a = 0; a < NumActions - 1; a++)
+        {
+            if (!isClaimed[a]) continue;
+            if (sb.Length > 0) sb.Append(", ");
+            sb.Append($"{claimNum[a]}x{claimRank[a]}");
+        }
+        return sb.ToString();
     }
 
     private bool VerifyClaim(bool[] isClaimed, int[] rollCounts)
