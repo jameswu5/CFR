@@ -73,6 +73,12 @@ A  pb | [0.000  1.000]
 
 The strategy for holding the strongest / weakest card is similar to that of the 3-card variant. But now there is more variation in strategies if you hold a Queen and a King. Holding a Queen as Player 1 means you should bet 0.003 of the time, which can be considered as a bluff as it's more likely the opponent is holding a stronger card. Also if you hold a King as Player 1 and the history is ```pb```, you should always call, even though the opponent may hold an Ace, as it's also possible the opponent is bluffing.
 
+## Dudo
+
+Liar's dice is a good example of an imperfect information game, but in this project we explore a very simple variant. Each of the two players roll a standard unweighted dice, and only themselves know what they rolled. Then the prediction phase begins where each player takes turn claiming something of form $n \times r$, where there are $n$ occurrences of $r$ face up dice. Each claim must be stronger than the preceding one, meaning it has a greater $n$ and/or $r$. The only exception is the wildcard 1, where 1 counts in the occurrences of every roll. Therefore, a claim of $2 \times 1$ is stronger than $2 \times 6$. This goes on until one player wants to challenge the opponent's claim and shouts 'Dudo'. The dice are then revealed and the claim is checked. If the claim is true, then the challenger loses. If the claim is false, then the challenger wins. This is a simplified version of Perudo, where I attatch the [rulebook](https://cdn.1j1ju.com/medias/f4/4f/09-perudo-rulebook.pdf).
+
+Even the simple variant has a lot of possible information states, since for a standard 6-sided dice and 2 players we have 13 possible actions (counting the 'Dudo' action). Thus there are $6 \times 2^{13} = 49152$ possible information states. This is too much to train with a few thousand iterations, so I made the compromise of only looking at the most recent claim to perform Counterfactual Regret minimisation. The result is unfortunately not too promising with this abstraction, although it picks up some basic obvious tactics, such as never calling 'Dudo' when starting.
+
 ## Resources
 
 [Kuhn Poker - Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker#Optimal_strategy)
