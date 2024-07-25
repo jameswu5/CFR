@@ -1,9 +1,7 @@
 
-using System.Text;
 
 namespace CFR.Dudo;
 
-// This is basically the same as in Kuhn Poker so look to merge the two after this
 public class Node
 {
     public readonly int NumActions;
@@ -88,6 +86,6 @@ public class Node
             strat[NumActions - actionsLeft + i] = Math.Round(avgStrategy[i], 3);
         }
 
-        return $"{infoString} | {string.Join(", ", strat.Select(x => x.ToString().PadLeft(5)))}";
+        return $"{infoString} | {string.Join("  ", strat.Select(x => x.ToString().PadLeft(5)))}";
     }
 }

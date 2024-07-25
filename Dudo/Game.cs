@@ -1,4 +1,3 @@
-using System.Text;
 
 namespace CFR.Dudo;
 
@@ -113,12 +112,9 @@ public class Game
         }
 
         Console.WriteLine($"Average game value: {util / iterations}\n");
-        foreach (Node n in nodeMap.Values)
-        {
-            // Don't print every value
-            // if (random.Next(100) == 0) Console.WriteLine(n);
-            Console.WriteLine(n);
-        }
+
+        PrintTableHeader();
+        PrintNodes();
     }
 
     private int InfoSetToInteger(int roll, List<int> history)
@@ -134,6 +130,29 @@ public class Game
         int claim = infoInt >> 3;
         if (claim == NumActions + 1) return $"{roll+1} | None";
         return $"{roll+1} |  {claimNum[claim]}x{claimRank[claim]+1}";
+    }
+
+    private void PrintTableHeader()
+    {
+        Console.Write($"r | Prev |");
+        for (int i = 0; i < NumActions - 1; i++)
+        {
+            Console.Write($"  {claimNum[i]}x{claimRank[i]+1}  ");
+        }
+        Console.WriteLine(" Dudo");
+
+        int width = 10 + 7 * NumActions;
+        Console.WriteLine($"{new string('-', width)}");
+    }
+
+    private void PrintNodes()
+    {
+        List<Node> nodes = nodeMap.Values.ToList();
+        nodes.Sort((a, b) => a.infoID.CompareTo(b.infoID));
+        foreach (Node n in nodes)
+        {
+            Console.WriteLine(n);
+        }
     }
 
     private bool VerifyClaim(List<int> history, int[] rollCounts)
