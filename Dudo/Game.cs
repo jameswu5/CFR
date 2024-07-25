@@ -60,14 +60,15 @@ public class Game
         // Check if history is terminal
         if (isClaimed[^1])
         {
+            // opponent made the claim
             int[] rollCounts = new int[NumSides];
             foreach (int roll in rolls) rollCounts[roll]++;
 
-            // Verify the claims
+            // If claim is true, we win since the opponent made the doubt
             int multiplier = player == 0 ? 1 : -1;
-
-            // If claim is true, we lose since we are the one who made the doubt
-            return VerifyClaim(isClaimed, rollCounts) ? -multiplier : multiplier;
+            return VerifyClaim(isClaimed, rollCounts) ? multiplier : -multiplier;
+            // return VerifyClaim(isClaimed, rollCounts) ? player - 1 : -player;
+            // return VerifyClaim(isClaimed, rollCounts) ? 0 : -multiplier;
         }
 
         int infoID = InfoSetToInteger(rolls[player], isClaimed);
@@ -82,7 +83,7 @@ public class Game
         // Get information set node or create it if nonexistent
         if (!nodeMap.ContainsKey(infoID))
         {
-            Node newNode = new(NumActions, infoID, ClaimHistoryToString(isClaimed));
+            Node newNode = new(NumActions, actionsLeft, infoID, ClaimHistoryToString(isClaimed));
             nodeMap[infoID] = newNode;
         }
         Node node = nodeMap[infoID];
@@ -124,12 +125,13 @@ public class Game
             {
                 Console.WriteLine($"Iteration {i}");
             }
-
         }
+
         Console.WriteLine($"Average game value: {util / iterations}\n");
         foreach (Node n in nodeMap.Values)
         {
-            // Console.WriteLine(n);
+            // Don't print every value
+            if (random.Next(500) == 0) Console.WriteLine(n);
         }
     }
 
@@ -151,7 +153,7 @@ public class Game
         {
             if (!isClaimed[a]) continue;
             if (sb.Length > 0) sb.Append(", ");
-            sb.Append($"{claimNum[a]}x{claimRank[a]}");
+            sb.Append($"{claimNum[a]}x{claimRank[a]+1}");
         }
         return sb.ToString();
     }
@@ -164,12 +166,13 @@ public class Game
             rollCounts[i] += rollCounts[0];
         }
 
-        for (int a = 0; a < NumActions - 1; a++)
+        for (int a = NumActions - 2; a >= 0; a--)
         {
             if (!isClaimed[a]) continue;
-            if (rollCounts[claimRank[a]] < claimNum[a]) return false;
+
+            return rollCounts[claimRank[a]] >= claimNum[a];
         }
+
         return true;
     }
-
 }

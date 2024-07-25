@@ -10,7 +10,7 @@ public static class Test
 
     public static void TrainDudo()
     {
-        int iterations = 1000;
+        int iterations = 2000;
         Game game = new();
         game.Train(iterations);
     }
