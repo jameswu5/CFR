@@ -46,9 +46,37 @@ Interestingly, if you hold a King as Player 1, you should only bet three fifths 
 
 The optimal strategy can be found on [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker#Optimal_strategy).
 
+### 4-card Kuhn Poker
+
+It would be interesting to observe what happens if we add a 4th card, the Ace, which is stronger than all other three. We run the same algorithm on 5 million iterations, and this is the result. The interpretation of the display of the result is the same as that of the 3-card variant.
+
+```
+Average game value: -0.04153065933906793
+
+J     | [0.751  0.249]
+J   p | [0.501  0.499]
+J   b | [1.000  0.000]
+J  pb | [1.000  0.000]
+Q     | [0.997  0.003]
+Q   p | [1.000  0.000]
+Q   b | [0.782  0.218]
+Q  pb | [0.751  0.249]
+K     | [1.000  0.000]
+K   p | [0.499  0.501]
+K   b | [0.217  0.783]
+K  pb | [0.000  1.000]
+A     | [0.247  0.753]
+A   p | [0.000  1.000]
+A   b | [0.000  1.000]
+A  pb | [0.000  1.000]
+```
+
+The strategy for holding the strongest / weakest card is similar to that of the 3-card variant. But now there is more variation in strategies if you hold a Queen and a King. Holding a Queen as Player 1 means you should bet 0.003 of the time, which can be considered as a bluff as it's more likely the opponent is holding a stronger card. Also if you hold a King as Player 1 and the history is ```pb```, you should always call, even though the opponent may hold an Ace, as it's also possible the opponent is bluffing.
+
 ## Resources
 
 [Kuhn Poker - Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker#Optimal_strategy)
+
 [An Introduction to Counterfactual Regret Minimization (Neller, Lanctot)](https://www.ma.imperial.ac.uk/~dturaev/neller-lanctot.pdf)
 
 
