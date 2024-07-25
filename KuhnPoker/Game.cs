@@ -4,15 +4,17 @@ namespace CFR.KuhnPoker;
 public class Game
 {
     public enum Move { Pass, Bet };
-    public enum Card { J, Q, K };
+    public enum Card { J, Q, K, A };
     public const int NumActions = 2;
     public readonly Random random;
     public Dictionary<string, Node> nodeMap;
+    public int cardsInPlay;
 
-    public Game()
+    public Game(int cardsInPlay = 3)
     {
         random = new Random();
         nodeMap = new();
+        this.cardsInPlay = cardsInPlay;
     }
 
     public double CFR(int[] cards, string history, double p0, double p1)
@@ -77,7 +79,7 @@ public class Game
 
     public void Train(int iterations)
     {
-        int[] cards = { 0, 1, 2 };
+        int[] cards = Enumerable.Range(0, cardsInPlay).ToArray();
         double util = 0;
         for (int i = 0; i < iterations; i++)
         {
