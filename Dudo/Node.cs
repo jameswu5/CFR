@@ -9,18 +9,18 @@ public class Node
     public readonly int NumActions;
     public int actionsLeft;
     public int infoID;
-    private string history;
+    public string infoString;
 
     public double[] regretSum;
     public double[] strategy;
     public double[] strategySum;
 
-    public Node(int NumActions, int actionsLeft, int infoID, string history)
+    public Node(int NumActions, int actionsLeft, int infoID, string infoString)
     {
         this.NumActions = NumActions;
         this.actionsLeft = actionsLeft;
         this.infoID = infoID;
-        this.history = history;
+        this.infoString = infoString;
 
         regretSum   = new double[actionsLeft];
         strategy    = new double[actionsLeft];
@@ -88,6 +88,6 @@ public class Node
             strat[NumActions - actionsLeft + i] = Math.Round(avgStrategy[i], 3);
         }
 
-        return $"{roll + 1} | {history} | {string.Join(", ", strat)}";
+        return $"{infoString} | {string.Join(", ", strat.Select(x => x.ToString().PadLeft(5)))}";
     }
 }

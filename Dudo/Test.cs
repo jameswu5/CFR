@@ -5,12 +5,11 @@ public static class Test
 {
     public static void Playground()
     {
-        TrainDudo();
+        TrainDudo(2000);
     }
 
-    public static void TrainDudo()
+    public static void TrainDudo(int iterations)
     {
-        int iterations = 2000;
         Game game = new();
         game.Train(iterations);
     }
