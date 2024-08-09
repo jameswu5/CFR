@@ -26,10 +26,8 @@ public class Game
         // Return payoff for terminal states
         if (plays > 1)
         {
-            bool terminalPass = history[^1] == 'p';
-            bool doubleBet = history[^2..] == "bb";
             bool isPlayerCardHigher = cards[player] > cards[opponent];
-            if (terminalPass)
+            if (history[^1] == 'p')
             {
                 if (history == "pp")
                 {
@@ -37,7 +35,7 @@ public class Game
                 }
                 return 1;
             }
-            else if (doubleBet)
+            else if (history[^2..] == "bb")
             {
                 return isPlayerCardHigher ? 2 : -2;
             }
