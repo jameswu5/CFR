@@ -16,11 +16,16 @@ public class Kuhn3Players : Game
 
         int plays = history.Length;
         int player = plays % 3;
-        int opponent1 = (player + 1) % 3;
-        int opponent2 = (player + 2) % 3;
 
-        // TODO: terminal states !!
+        int terminalState = GetTerminal(history);
+        if (terminalState != -1)
+        {
+            int winner = GetWinner(terminalState, cards);
+            int pot = GetPot(terminalState);
+            int staked = ((terminalState & (1 << (player + 3))) > 0) ? 2 : 1;
 
+            return (winner == player) ? pot - staked : -staked;
+        }
 
         string infoSet = $"{cards[player]}{history}";
         if (!nodeMap.ContainsKey(infoSet))
@@ -62,5 +67,109 @@ public class Kuhn3Players : Game
         }
 
         return nodeUtil;
+    }
+
+    private static int GetTerminal(string history)
+    {
+        // code: sssaaa
+        // s is a flag for whether the player has staked an extra chip
+        // a is a flag for whether a player is still active
+
+        // simulate the game
+        bool[] players = new bool[] { true, true, true };
+        bool[] staked = new bool[] { false, false, false};
+        
+        int active = 3;
+
+        int turn = 0;
+        int target = 0;
+        bool bet = false;
+        foreach (char action in history)
+        {
+            if (action == 'p')
+            {
+                // fold
+                if (bet)
+                {
+                    players[turn] = false;
+                    active--;
+                }
+
+                // else check: do nothing but increment turn
+            }
+            if (action == 'b')
+            {
+                staked[turn] = true;
+
+                if (!bet)
+                {
+                    // raise
+                    bet = true;
+                    target = turn;
+                }
+
+                // else call: do nothing but increment turn
+            }
+
+            // increment turn
+            do {
+                turn = (turn + 1) % 3;
+
+                if (turn == target)
+                {
+                    // terminal game state
+                    int res = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (staked[i])
+                        {
+                            res |= 1 << (i + 3);
+                        }
+
+                        if (players[i])
+                        {
+                            res |= 1 << i;
+                        }
+                    }
+                    return res;
+                }
+
+            } while (!players[turn]);
+        }
+
+        // not terminal
+        return -1;
+    }
+
+    private static int GetWinner(int terminalState, int[] cards)
+    {
+        int winner = -1;
+        int bestCard = -1;
+        for (int i = 0; i < 3; i++)
+        {
+            // check if still active
+            if ((terminalState & (1 << i)) != 0)
+            {
+                if (cards[i] > bestCard)
+                {
+                    bestCard = cards[i];
+                    winner = i;
+                }
+            }
+        }
+        return winner;
+    }
+
+    private static int GetPot(int terminalState)
+    {
+        int pot = 3;
+        for (int i = 3; i < 6; i++)
+        {
+            if ((terminalState & (1 << i)) != 0)
+            {
+                pot++;
+            }
+        }
+        return pot;
     }
 }
