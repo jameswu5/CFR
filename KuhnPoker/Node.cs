@@ -10,12 +10,16 @@ public class Node
     public double[] strategy;
     public double[] strategySum;
 
+    public Game.Card card;
+
     public Node(string infoSet)
     {
         this.infoSet = infoSet;
         regretSum    = new double[NumActions];
         strategy     = new double[NumActions];
         strategySum  = new double[NumActions];
+
+        card = (Game.Card)int.Parse(infoSet[0].ToString());
     }
 
     public double[] GetStrategy(double realisationWeight)
@@ -70,7 +74,6 @@ public class Node
 
     public override string ToString()
     {
-        Game.Card card = (Game.Card)int.Parse(infoSet[0].ToString());
-        return string.Format("{0} {1,3} | [{2}]", card, infoSet[1..], string.Join("  ", GetAverageStrategy().Select(x => x.ToString("F3"))));
+        return string.Format("{0} {1,5} | [{2}]", card, infoSet[1..], string.Join("  ", GetAverageStrategy().Select(x => x.ToString("F3"))));
     }
 }
