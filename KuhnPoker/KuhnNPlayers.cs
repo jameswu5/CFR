@@ -47,23 +47,23 @@ public class KuhnNPlayers : Game
             nodeUtil += strategy[a] * util[a];
         }
 
-        double probsProduct = 1;
+        double probValue = 1;
         for (int i = 0; i < NumOfPlayers; i++)
         {
-            probsProduct *= probs[i];
+            if (i == player) continue;
+            probValue *= probs[i];
         }
 
         for (int a = 0; a < NumActions; a++)
         {
             double regret = util[a] - nodeUtil;
-
-            node.regretSum[a] += probsProduct * regret / probs[player];
+            node.regretSum[a] += probValue * regret;
         }
 
         return nodeUtil;
     }
 
-    public int GetTerminal(string history)
+    private int GetTerminal(string history)
     {
         // code: s__sa__a
         // s is a flag for whether the player has staked an extra chip
