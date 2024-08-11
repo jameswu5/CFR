@@ -11,14 +11,14 @@ public static class Test
     public static void TrainKuhnPoker3()
     {
         int iterations = 1000000;
-        Game game = new();
+        Game game = new Kuhn2Players();
         game.Train(iterations);
     }
 
     public static void TrainKuhnPoker4()
     {
         int iterations = 5000000;
-        Game game = new(4);
+        Game game = new Kuhn2Players(4);
         game.Train(iterations);
     }
 }
