@@ -1,4 +1,6 @@
 
+using System.Reflection.Metadata.Ecma335;
+
 namespace CFR.KuhnPoker;
 
 public abstract class Game
@@ -8,6 +10,7 @@ public abstract class Game
     public const int NumActions = 2;
     public readonly Random random;
     public Dictionary<string, Node> nodeMap;
+    public readonly NodeComparer nodeComparer;
     public int cardsInPlay;
 
     public int NumOfPlayers;
@@ -16,6 +19,7 @@ public abstract class Game
     {
         random = new Random();
         nodeMap = new();
+        nodeComparer = new();
         this.cardsInPlay = cardsInPlay;
     }
 
@@ -34,7 +38,11 @@ public abstract class Game
             util += CFR(cards, "", ones);
         }
         Console.WriteLine($"Average game value: {util / iterations}\n");
-        foreach (Node n in nodeMap.Values)
+        
+        List<Node> nodes = nodeMap.Values.ToList();
+        nodes.Sort(nodeComparer);
+        
+        foreach (Node n in nodes)
         {
             Console.WriteLine(n);
         }
