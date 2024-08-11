@@ -1,28 +1,24 @@
 
 namespace CFR.KuhnPoker;
 
-public class Kuhn3Players : Game
+public class KuhnNPlayers : Game
 {
-    public Kuhn3Players(int cardsInPlay = 4) : base(cardsInPlay)
+    public KuhnNPlayers(int NumOfPlayers, int cardsInPlay) : base(cardsInPlay)
     {
-        NumOfPlayers = 3;
+        this.NumOfPlayers = NumOfPlayers;
     }
 
     public override double CFR(int[] cards, string history, double[] probs)
     {
-        double p0 = probs[0];
-        double p1 = probs[1];
-        double p2 = probs[2];
-
         int plays = history.Length;
-        int player = plays % 3;
+        int player = plays % NumOfPlayers;
 
         int terminalState = GetTerminal(history);
         if (terminalState != -1)
         {
             int winner = GetWinner(terminalState, cards);
             int pot = GetPot(terminalState);
-            int staked = ((terminalState & (1 << (player + 3))) > 0) ? 2 : 1;
+            int staked = ((terminalState & (1 << (player + NumOfPlayers))) > 0) ? 2 : 1;
 
             return (winner == player) ? pot - staked : -staked;
         }
@@ -43,43 +39,41 @@ public class Kuhn3Players : Game
         {
             string nextHistory = history + (a == 0 ? "p" : "b");
 
-            util[a] = player switch
-            {
-                0 => -CFR(cards, nextHistory, new double[] { p0 * strategy[a], p1, p2 }),
-                1 => -CFR(cards, nextHistory, new double[] { p0, p1 * strategy[a], p2 }),
-                2 => -CFR(cards, nextHistory, new double[] { p0, p1, p2 * strategy[a] }),
-                _ => throw new Exception($"Invalid player [{player}]"),
-            };
+            double[] nextProbs = new double[NumOfPlayers];
+            Array.Copy(probs, nextProbs, NumOfPlayers);
+            nextProbs[player] *= strategy[a];
+            util[a] = -CFR(cards, nextHistory, nextProbs);
+
             nodeUtil += strategy[a] * util[a];
+        }
+
+        double probsProduct = 1;
+        for (int i = 0; i < NumOfPlayers; i++)
+        {
+            probsProduct *= probs[i];
         }
 
         for (int a = 0; a < NumActions; a++)
         {
             double regret = util[a] - nodeUtil;
 
-            node.regretSum[a] += player switch
-            {
-                0 => p1 * p2 * regret,
-                1 => p0 * p2 * regret,
-                2 => p0 * p1 * regret,
-                _ => throw new Exception($"Invalid player [{player}]"),
-            };
+            node.regretSum[a] += probsProduct * regret / probs[player];
         }
 
         return nodeUtil;
     }
 
-    private static int GetTerminal(string history)
+    public int GetTerminal(string history)
     {
-        // code: sssaaa
+        // code: s__sa__a
         // s is a flag for whether the player has staked an extra chip
         // a is a flag for whether a player is still active
 
         // simulate the game
-        bool[] players = new bool[] { true, true, true };
-        bool[] staked = new bool[] { false, false, false};
+        bool[] players = Enumerable.Repeat(true, NumOfPlayers).ToArray();
+        bool[] staked = Enumerable.Repeat(false, NumOfPlayers).ToArray();
         
-        int active = 3;
+        int active = NumOfPlayers;
 
         int turn = 0;
         int target = 0;
@@ -113,17 +107,17 @@ public class Kuhn3Players : Game
 
             // increment turn
             do {
-                turn = (turn + 1) % 3;
+                turn = (turn + 1) % NumOfPlayers;
 
                 if (turn == target)
                 {
                     // terminal game state
                     int res = 0;
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < NumOfPlayers; i++)
                     {
                         if (staked[i])
                         {
-                            res |= 1 << (i + 3);
+                            res |= 1 << (i + NumOfPlayers);
                         }
 
                         if (players[i])
@@ -141,11 +135,11 @@ public class Kuhn3Players : Game
         return -1;
     }
 
-    private static int GetWinner(int terminalState, int[] cards)
+    private int GetWinner(int terminalState, int[] cards)
     {
         int winner = -1;
         int bestCard = -1;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < NumOfPlayers; i++)
         {
             // check if still active
             if ((terminalState & (1 << i)) != 0)
@@ -160,10 +154,10 @@ public class Kuhn3Players : Game
         return winner;
     }
 
-    private static int GetPot(int terminalState)
+    private int GetPot(int terminalState)
     {
-        int pot = 3;
-        for (int i = 3; i < 6; i++)
+        int pot = NumOfPlayers;
+        for (int i = NumOfPlayers; i < NumOfPlayers * 2; i++)
         {
             if ((terminalState & (1 << i)) != 0)
             {
